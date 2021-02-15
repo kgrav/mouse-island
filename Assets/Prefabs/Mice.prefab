@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1988010812057338}
+  m_IsPrefabParent: 1
+--- !u!1 &1988010812057338
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4536629298519366}
+  - component: {fileID: 114129657764880370}
+  - component: {fileID: 114964546096423964}
+  m_Layer: 0
+  m_Name: Mice
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4536629298519366
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1988010812057338}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.77, y: 0, z: -8.66}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114129657764880370
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1988010812057338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b765d1244df5ec34483763b90fc6da1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  adhocBedPointPrefab: {fileID: 0}
+  pubertyf: 3
+  pubertym: 4
+  lifeExpectancy: 7
+  waitMotives:
+    fullness: -1
+    physicalEnergy: -1
+    socialEnergy: -1
+    sexEnergy: 0
+    bathroom: 0
+    boredom: 0
+  moveMotives:
+    fullness: -1.2
+    physicalEnergy: -1.5
+    socialEnergy: -1
+    sexEnergy: 0
+    bathroom: 0
+    boredom: 0
+  emojiTable: []
+  hungerThreshold: 10
+  mouseSenseRadius: 10
+  rstepRange: {x: 2.5, y: 3.5}
+  baseProtagAffection: 0.5
+  baseMouseAffection: 0.1
+  bodyPrefab: {fileID: 1979618319967994, guid: a646b60f4f1bf2440bfaaa0d603a721c, type: 2}
+  destroyOnLoad: 1
+  globalMiceScale: 2
+  preset: {fileID: 11400000, guid: a45816d364161e942bc973ecac472ce4, type: 2}
+--- !u!114 &114964546096423964
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1988010812057338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4618375c74535d24fbe117b5f3852525, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  icons:
+  - {fileID: 21300000, guid: 403ed36d959327044a66e6b5f1b48941, type: 3}
+  - {fileID: 21300014, guid: 403ed36d959327044a66e6b5f1b48941, type: 3}
+  - {fileID: 21300010, guid: 403ed36d959327044a66e6b5f1b48941, type: 3}
+  - {fileID: 21300006, guid: 403ed36d959327044a66e6b5f1b48941, type: 3}
+  destroyOnLoad: 1
+  preset: []

@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05524e4b4df4bbb45afaa188157d0a69, type: 3}
+  m_Name: mice_test_01
+  m_EditorClassIdentifier: 
+  mice:
+  - female: 1
+    hungerRate: 1
+    affectionRate: 3
+    socialStamina: 0.5
+    energyLevel: 8
+    maxScale: 0.35
+    age: 1
+    maxAge: 3
+    sexEnergyMod: 0
+    motiveMods:
+      fullness: 1
+      physicalEnergy: 0.05
+      socialEnergy: 1
+      sexEnergy: 1
+      bathroom: 1
+      boredom: 1
+    color: {r: 1, g: 0.6397059, b: 0.9155173, a: 0}
+  - female: 0
+    hungerRate: 2
+    affectionRate: 2
+    socialStamina: 0.25
+    energyLevel: 10
+    maxScale: 0.4
+    age: 1
+    maxAge: 3.4
+    sexEnergyMod: 0
+    motiveMods:
+      fullness: 1
+      physicalEnergy: 0.2
+      socialEnergy: 1
+      sexEnergy: 1
+      bathroom: 1
+      boredom: 1
+    color: {r: 0.33088237, g: 0.7231237, b: 1, a: 0}
+  - female: 0
+    hungerRate: 2
+    affectionRate: 2
+    socialStamina: 0.25
+    energyLevel: 8
+    maxScale: 0.3
+    age: 1
+    maxAge: 3.4
+    sexEnergyMod: 0
+    motiveMods:
+      fullness: 1
+      physicalEnergy: 0.05
+      socialEnergy: 1
+      sexEnergy: 1
+      bathroom: 1
+      boredom: 1
+    color: {r: 0.76926976, g: 1, b: 0.33088237, a: 0}
+  - female: 1
+    hungerRate: 1
+    affectionRate: 2
+    socialStamina: 0.25
+    energyLevel: 12
+    maxScale: 0.6
+    age: 1
+    maxAge: 3.4
+    sexEnergyMod: 0
+    motiveMods:
+      fullness: 1
+      physicalEnergy: 0.05
+      socialEnergy: 1
+      sexEnergy: 1
+      bathroom: 1
+      boredom: 1
+    color: {r: 1, g: 0.5939148, b: 0.628, a: 0}
+  hungerRateG: 4
+  hungerThreshold: 10
+  energyLevelG: 10
+  speedG: 4
+  consumptionRate: 5
