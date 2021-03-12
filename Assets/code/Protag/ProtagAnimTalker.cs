@@ -32,6 +32,14 @@ public class ProtagAnimTalker : NVComponent {
         con.targetInteractive.Trigger(con, CONTROL.XBUTTON);
     }
 
+    void EnSit(){
+        con.EnSit();
+    }
+
+    void EnStand(){
+        con.EnStand();
+    }
+
     public void DropHit(){
         if(con.heldItem > -1)
         {

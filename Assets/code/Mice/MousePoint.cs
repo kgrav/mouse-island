@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public enum MPRESPONSE{FULL, INACTIVE, AVAILABLE, REJECTED}
+public enum MPRESPONSE{FULL, INACTIVE, AVAILABLE, REJECTED, RSVP}
 
 public abstract class MousePoint : NVComponent {
     
@@ -10,14 +10,16 @@ public abstract class MousePoint : NVComponent {
     public static List<MousePoint> points=null;
     public static Dictionary<MSTIMULUS, List<int>> pointsByType;
 
-    public int auditTrailLength;
+    int auditTrailLength=4;
     public float auditTrailRefreshRate;
     protected HistoryQueue<int> auditTrail;
+    public List<int> pullAuditTrail {get{return auditTrail.getQueue;}}
     public MotivesRatio motivesRatio;
     protected List<int> _occupants;
     public List<int> occupants {get{return _occupants;}}
     public int maxCapacity;
     int mpindex;
+
     protected int[] lastIndx;
     protected bool _active;
 
@@ -37,9 +39,6 @@ public abstract class MousePoint : NVComponent {
         _occupants = new List<int>();
         mpindex = points.Count;
         auditTrail = new HistoryQueue<int>(auditTrailLength);
-        if(auditTrailRefreshRate > 0){
-            Invoke("flushAuditTrail", auditTrailRefreshRate);
-        }
         points.Add(this);
         if(!pointsByType.ContainsKey(type)){
             pointsByType[type] = new List<int>();
@@ -50,10 +49,13 @@ public abstract class MousePoint : NVComponent {
         Init();
     }
 
-    void flushAuditTrail(){
-        auditTrail.Clear();
-        Invoke("flushAuditTrail", auditTrailRefreshRate);
+    protected override void NVUpdate()
+    {
+        ChUpdate();
+        auditTrail.UpdateTime(Time.deltaTime);
     }
+
+    protected virtual void ChUpdate(){}
     protected virtual void Init(){
     }
     public virtual MPRESPONSE Availability(int mouseIndex){
@@ -67,7 +69,7 @@ public abstract class MousePoint : NVComponent {
     public void Engage(Mice.Mouse mouse){
         if(!occupants.Contains(mouse.index))
             occupants.Add(mouse.index);
-        auditTrail.Log(mouse.index);
+        auditTrail.Log(mouse.index,auditTrailRefreshRate);
         mouse.SetMousePointCallback(this);
         OnEngage(mouse);
     }

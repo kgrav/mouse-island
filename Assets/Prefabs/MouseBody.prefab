@@ -377,7 +377,7 @@ MonoBehaviour:
   - {fileID: 21300010, guid: 940c3f61e8517aa41a693bc8b835f708, type: 3}
   - {fileID: 21300008, guid: 940c3f61e8517aa41a693bc8b835f708, type: 3}
   - {fileID: 21300010, guid: 940c3f61e8517aa41a693bc8b835f708, type: 3}
-  upTime: 0.1
+  upTime: 0.8
 --- !u!114 &114567216175932418
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -411,16 +411,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0ddd1fbe692e4a4f8f02205247c5790, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  auditTrailRefreshRate: 500
   motivesRatio:
-    fullness: 0
-    physicalEnergy: 0
-    socialEnergy: 0
-    sexEnergy: 0
+    fullness: -0.06
+    physicalEnergy: -1
+    socialEnergy: 1
+    sexEnergy: -3
     bathroom: 0
-    boredom: 0
-  maxCapacity: 0
-  startActive: 0
-  type: 4
+    boredom: 0.5
+  maxCapacity: 2
+  startActive: 1
+  type: 2
 --- !u!136 &136498627044780502
 CapsuleCollider:
   m_ObjectHideFlags: 1

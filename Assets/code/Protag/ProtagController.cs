@@ -47,7 +47,7 @@ public class ProtagController : NVComponent {
 	public AxisButton[] inventoryAccess; 
 	// Use this for initialization
 	Rigidbody _rbody;
-	Rigidbody rbody{get{if(!_rbody)_rbody=GetComponent<Rigidbody>(); return _rbody;}}
+	public Rigidbody rbody{get{if(!_rbody)_rbody=GetComponent<Rigidbody>(); return _rbody;}}
 	Animator _anim;
 	Animator anim {get{if(!_anim)_anim=GetComponent<Animator>(); return _anim;}}
 	public PROTAGSTATE state = PROTAGSTATE.NORMAL;
@@ -284,6 +284,13 @@ public class ProtagController : NVComponent {
 	public void DropItem(){
 		Items.GetItem(_heldItem).body.Trigger(this, CONTROL.BBUTTON);
 		_heldItem = -1;
+	}
+	public void EnSit(){
+		state = PROTAGSTATE.SIT;
+	}
+
+	public void EnStand(){
+		state = PROTAGSTATE.NORMAL;
 	}
 
 	public void AnimEnd(){

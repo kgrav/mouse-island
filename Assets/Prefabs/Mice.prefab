@@ -52,33 +52,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b765d1244df5ec34483763b90fc6da1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  droppingsPrefab: {fileID: 1179571498522478, guid: 31204a11c90e5cb49a534c89c8e8471c,
+    type: 2}
   adhocBedPointPrefab: {fileID: 0}
+  adhocBathroomPointPrefab: {fileID: 0}
+  globalAffectionRate: 0.02
   pubertyf: 3
   pubertym: 4
   lifeExpectancy: 7
   waitMotives:
-    fullness: -1
+    fullness: -0.03
     physicalEnergy: -1
-    socialEnergy: -1
+    socialEnergy: -0.5
     sexEnergy: 0
-    bathroom: 0
+    bathroom: -0.01
     boredom: 0
   moveMotives:
-    fullness: -1.2
+    fullness: -0.06
     physicalEnergy: -1.5
-    socialEnergy: -1
+    socialEnergy: -0.5
     sexEnergy: 0
-    bathroom: 0
+    bathroom: -0.01
     boredom: 0
   emojiTable: []
   hungerThreshold: 10
   mouseSenseRadius: 10
   rstepRange: {x: 2.5, y: 3.5}
   baseProtagAffection: 0.5
-  baseMouseAffection: 0.1
+  baseMouseAffection: 0.5
   bodyPrefab: {fileID: 1979618319967994, guid: a646b60f4f1bf2440bfaaa0d603a721c, type: 2}
   destroyOnLoad: 1
-  globalMiceScale: 2
+  globalMiceScale: 4
   preset: {fileID: 11400000, guid: a45816d364161e942bc973ecac472ce4, type: 2}
 --- !u!114 &114964546096423964
 MonoBehaviour:

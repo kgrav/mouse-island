@@ -30,7 +30,8 @@ public class DayCycle : MonoBehaviour {
         totalTime += Time.deltaTime;
         if(Mathf.Ceil(totalTime/secondsPerDay)>_day){
             _day = (int)Mathf.Ceil(totalTime/secondsPerDay);
-            
+            Mice.NewDay();
+            tod=0;
         }
         tod += Time.deltaTime;
         float normaltod = tod/secondsPerDay;
