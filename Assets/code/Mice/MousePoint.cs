@@ -8,7 +8,7 @@ public abstract class MousePoint : NVComponent {
 
     
     public static List<MousePoint> points=null;
-    public static Dictionary<MSTIMULUS, List<int>> pointsByType;
+    public static Dictionary<MSTIMULUS, List<MousePoint>> pointsByType;
 
     int auditTrailLength=4;
     public float auditTrailRefreshRate;
@@ -19,7 +19,11 @@ public abstract class MousePoint : NVComponent {
     public List<int> occupants {get{return _occupants;}}
     public int maxCapacity;
     int mpindex;
+    int mbcalls = 0;
+    MouseBody _body;
+    public MouseBody body {get{if(!_body && mbcalls <1)_body=GetComponent<MouseBody>();mbcalls++;return _body;}}
 
+    public ShipTag shipTag;
     protected int[] lastIndx;
     protected bool _active;
 
@@ -34,16 +38,20 @@ public abstract class MousePoint : NVComponent {
     void Awake(){
         if(points == null){
             points = new List<MousePoint>();
-            pointsByType = new Dictionary<MSTIMULUS, List<int>>();
+            pointsByType = new Dictionary<MSTIMULUS, List<MousePoint>>();
         }
         _occupants = new List<int>();
         mpindex = points.Count;
         auditTrail = new HistoryQueue<int>(auditTrailLength);
         points.Add(this);
-        if(!pointsByType.ContainsKey(type)){
-            pointsByType[type] = new List<int>();
+        foreach(MSTIMULUS m in MPUtil.stimList){
+            if(motivesRatio.GetMotive(m).value > 0 && motivesRatio.GetMotive(m).use){
+                if(!pointsByType.ContainsKey(m)){
+                    pointsByType.Add(m, new List<MousePoint>());
+                }
+                pointsByType[m].Add(this);
+            }
         }
-        pointsByType[type].Add(mpindex);
         if(startActive)
             _active=true;
         Init();
@@ -85,5 +93,8 @@ public abstract class MousePoint : NVComponent {
 
     protected virtual void OnDisengage(Mice.Mouse mouse){}
 
-    public MSTIMULUS type;
+    public class MPType {
+        public MSTIMULUS type;
+        public int rating;
+    }
 }

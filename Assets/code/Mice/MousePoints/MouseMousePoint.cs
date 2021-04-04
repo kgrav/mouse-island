@@ -3,19 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MouseMousePoint : MousePoint {
-
-    static List<MouseMousePoint> _socialPoints;
-    public static List<MouseMousePoint> socialPoints{get{return _socialPoints;}}
     MouseBody _body;
     public MouseBody body {get{if(!_body)_body=GetComponent<MouseBody>();return _body;}}
 
-    protected override void Init()
-    {
-        if(_socialPoints==null)
-            _socialPoints = new List<MouseMousePoint>();
-        
-        _socialPoints.Add(this);
-    }
 
     public override MPRESPONSE Availability(int mouseIndex){
         //print(base.Availability(mouseIndex) + ", " + Mice.GetMouse(body.index).drySocialize(mouseIndex));

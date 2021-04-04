@@ -18,7 +18,7 @@ public class Mice : MonoBehaviour {
     public AdhocBedPoint adhocBedPointPrefab;
     public AdhocBathroomPoint adhocBathroomPointPrefab;
 
-    public static AdhocBedPoint CreateAdhocBedPoint(int i, Vector3 point){
+    public static AdhocBedPoint CreateAdhocMousePoint(int i, Vector3 point, MSTIMULUS type){
         AdhocBedPoint q = Instantiate(Mice.mice.adhocBedPointPrefab, point, Quaternion.identity).GetComponent<AdhocBedPoint>();
         q.SetOwner(i);
         return q;
@@ -152,7 +152,7 @@ public class Mice : MonoBehaviour {
         Appetite[] motives;
         MotivesRatio motiveMod;
 
-        Vector3 affinity;
+        public Vector3 affinity;
         int hiAffinity=-1, penHiAffinity=-1;
 
         public Vector3 position {get {return body.tform.position;}}
@@ -243,7 +243,7 @@ public class Mice : MonoBehaviour {
             speed = (rbool ? m.speed : f.speed)*(1+0.5f*redShift);
             relationshipsView = new List<int>();
             motiveMod = rbool ? m.motiveMod : f.motiveMod;
-            _relationships = new float[200];
+            _relationships = new float[2000];
             protagRelationship = Mice.rmod*Mice.mice.baseProtagAffection;
             for(int i = 0; i < relationships.Length; ++i){
                 relationships[i] = Mice.rmod*Mice.mice.baseMouseAffection;
@@ -358,7 +358,6 @@ public class Mice : MonoBehaviour {
                     //velocity += BoidAdjust(velocity);
                     body.tform.LookAt(body.tform.position + velocity);
                     dayExercise += Time.deltaTime;
-                    print("move, motive is " + (goalMousePoint ? goalMousePoint.type : motive));
                     if(Vector3.Distance(body.tform.position, goalPoint)<scale*1.5f){
                         velocity = Vector3.zero;
                         if(goalMousePoint){
@@ -404,7 +403,7 @@ public class Mice : MonoBehaviour {
                     else{
                         callbackMousePoint.Access(this);
                         
-                        if(motives[(int)callbackMousePoint.type].isFull()){
+                        if(motives[(int)motive].isFull()){
                             DisengageMousePoint(false);
                             ChangeState(MSTATE.WAIT);
                         }
@@ -414,7 +413,7 @@ public class Mice : MonoBehaviour {
         }
 
         public void EngageToyMP(ToyMousePoint tmp){
-            motives[(int)MSTIMULUS.BOREDOM].Update(tmp.motivesRatio.boredom*(1-(Vector3.Distance(tmp.vectorAffinity, affinity)/255)), 1);
+            motives[(int)MSTIMULUS.BOREDOM].Update(tmp.motivesRatio.boredom.value*(1-(Vector3.Distance(tmp.vectorAffinity, affinity)/255)), 1);
             foreach(int i in tmp.pullAuditTrail){
                 if(i!=index)
                     IncreaseAffection(i, 0.2f);
@@ -525,16 +524,22 @@ public class Mice : MonoBehaviour {
                     ratio = Mice.mice.moveMotives;
                 break;
             }
-            motives[(int)MSTIMULUS.HUNGER].Update(ratio.fullness*motiveMod.fullness, perHour);
-            if(ratio.fullness > 0){
-                dayFeeding += ratio.fullness*perHour;
-                motives[(int)MSTIMULUS.BATHROOM].Update(-1,perHour);
+ 
+            for(int i = 0; i < motives.Length; ++i){
+                float mul = ratio.GetMotive((MSTIMULUS)i).use ? ratio.GetMotive((MSTIMULUS)i).value : 1;
+                float mmmul = motiveMod.GetMotive((MSTIMULUS)(i)).use ? motiveMod.GetMotive((MSTIMULUS)i).value : 1;
+                motives[i].Update(mul*mmmul, perHour);
+                if(motives[i].isLow()){
+                    motives[i].emoteTimer -= Time.deltaTime;
+                    if(motives[i].emoteTimer <=0){
+                        body.emo.SetVisibleAndFade();
+                        motives[i].emoteTimer = UnityEngine.Random.Range(60f,90f);
+                    }
+                }
+                else{
+                    motives[i].emoteTimer=0;
+                }
             }
-            motives[(int)MSTIMULUS.ENERGY].Update(ratio.physicalEnergy*motiveMod.physicalEnergy,perHour);
-            motives[(int)MSTIMULUS.SOCIAL].Update(ratio.socialEnergy*motiveMod.socialEnergy, perHour);
-            motives[(int)MSTIMULUS.SEXDRIVE].Update(ratio.sexEnergy*motiveMod.sexEnergy, perHour);
-            motives[(int)MSTIMULUS.BATHROOM].Update(ratio.bathroom*motiveMod.bathroom, perHour);
-            motives[(int)MSTIMULUS.BOREDOM].Update(ratio.boredom*motiveMod.boredom, perHour);
         } 
         bool marked = false;
         public void Mark (){
@@ -588,10 +593,6 @@ public class Mice : MonoBehaviour {
             if(motive != newMotive){
                 timeInMotive=0;
                 motive = newMotive;
-                if((int)newMotive > -1){
-                    body.emo.SetSprite((int)newMotive);
-                    body.emo.SetVisibleAndFade();
-                }
                 goalMousePoint=null;
             }
         }
@@ -627,11 +628,29 @@ public class Mice : MonoBehaviour {
             foreach(int i in orderedMotives){
                 if(i==(int)MSTIMULUS.SEXDRIVE)
                     continue;
-                MousePoint q = motives[i].GetNearestMousePoint(this,(MSTIMULUS)i);
-                if(q)
+                List<MousePoint> mps = MousePoint.pointsByType[(MSTIMULUS)i];
+                
+                int best=-1;
+                float ratingThreshold = motives[i].Criticality();
+                float minRating=float.MaxValue;
+                for(int j = 0; j < mps.Count; ++j)
                 {
-                    stim = q.type;    
-                    return q;
+                    if(mps[j].Availability(index)==MPRESPONSE.AVAILABLE && mps[j].motivesRatio.GetMotive((MSTIMULUS)i).rating < ratingThreshold){
+                        float overallRating = motives[i].RateMousePoint(this, (MSTIMULUS)i, mps[j]);
+                        if(overallRating < minRating){
+                            best = j;
+                            minRating = overallRating;
+                        }
+                    }
+                }
+                if(best != -1)
+                {
+                    stim = (MSTIMULUS)i;    
+                    return mps[best];
+                }
+                else if(motives[i].adhoc){
+                    stim = (MSTIMULUS)i;
+                    return Mice.CreateAdhocMousePoint(index, MiceZone.zone.GetWanderPoint(), stim);
                 }
             }
             return null;
@@ -670,6 +689,11 @@ public class Mice : MonoBehaviour {
         protected float _max;
         public float max {get{return _max;}}
 
+        public float emoteTimer=0;
+
+        protected bool _adhoc;
+        public bool adhoc { get{return _adhoc;}}
+
         public Appetite(){
             _key=0;
             _value=0;
@@ -677,15 +701,17 @@ public class Mice : MonoBehaviour {
             _hiAppetite=0;
             _priority=0;
             _max=0;
+            _adhoc=false;
         }
 
-        public Appetite(int key, float valuepct, float loAppetitepct, float hiAppetitepct, float max, float priority){
+        public Appetite(int key, float valuepct, float loAppetitepct, float hiAppetitepct, float max, float priority, bool adhoc){
             _key=key;
             _value = valuepct*max;
             _loAppetite = loAppetitepct*max;
             _hiAppetite = hiAppetitepct*max;
             _priority = priority;
             _max = max;
+            _adhoc = adhoc;
         }
 
         public void Update(float rate, float time){
@@ -707,7 +733,7 @@ public class Mice : MonoBehaviour {
         }
 
         public float Criticality(){
-            return criticalityMultiplier*((loAppetite-value)/loAppetite);
+            return (loAppetite-value)/loAppetite;
         }
 
         public bool isPositive(){
@@ -722,26 +748,12 @@ public class Mice : MonoBehaviour {
             return value/loAppetite <=0.33f;
         }
 
+        public virtual float RateMousePoint(Mouse mouse, MSTIMULUS stim, MousePoint mousePoint){
+            return float.MaxValue;
+        }
+
         public virtual MousePoint GetNearestMousePoint(Mouse m, MSTIMULUS localGoal){
-            if(localGoal == MSTIMULUS.SEXDRIVE)
-                print("find sex point");
-            if(MousePoint.points!=null && MousePoint.points.Count>0){
-                int best = -1;
-                float mindist = float.MaxValue;
-                for(int i = 0; i < MousePoint.points.Count; ++i){
-                    if(MousePoint.points[i].type==localGoal && MousePoint.points[i].Availability(m.index)==MPRESPONSE.AVAILABLE
-                        && Mathf.Abs(m.body.tform.position.y-MousePoint.points[i].tform.position.y)<2){
-                        float dist = Vector3.Distance(m.body.tform.position, MousePoint.points[i].tform.position);
-                        if(dist < mindist){
-                            best = i;
-                            mindist = dist;
-
-                        }
-                    }
-                }
-
-                return best > -1 ? MousePoint.points[best] : null;
-            }
+            
             return null;
         }
 
@@ -758,26 +770,9 @@ public class Mice : MonoBehaviour {
             _hiAppetite = hiAppetitepct*max;
             _priority = priority;
             _max = max;
+            _adhoc = false;
         }
-        public override MousePoint GetNearestMousePoint(Mouse m, MSTIMULUS localGoal)
-        {
-            if(MousePoint.points!=null && MousePoint.points.Count>0){
-                int best = -1;
-                float mindist = float.MaxValue;
-                for(int i = 0; i < MousePoint.points.Count; ++i){
-                    if(MousePoint.points[i].type==localGoal && MousePoint.points[i].Availability(m.index)==MPRESPONSE.AVAILABLE
-                        && Mathf.Abs(m.body.tform.position.y-MousePoint.points[i].tform.position.y)<2){
-                        float dist = Vector3.Distance(m.body.tform.position, MousePoint.points[i].tform.position);
-                        if(dist < mindist){
-                            best = i;
-                            mindist = dist;
-                        }
-                    }
-                }
-                return best > -1 ? MousePoint.points[best] : null;
-            }
-            return null;
-        }
+
         
     }
     class AppEnergy : Appetite {
@@ -788,25 +783,7 @@ public class Mice : MonoBehaviour {
             _hiAppetite = hiAppetitepct*max;
             _priority = priority;
             _max = max;
-        }
-        public override MousePoint GetNearestMousePoint(Mouse m, MSTIMULUS localGoal)
-        {
-            if(MousePoint.points!=null && MousePoint.points.Count>0){
-                int best = -1;
-                float mindist = float.MaxValue;
-                for(int i = 0; i < MousePoint.points.Count; ++i){
-                    if(MousePoint.points[i].type==localGoal && MousePoint.points[i].Availability(m.index)==MPRESPONSE.AVAILABLE
-                        && Mathf.Abs(m.body.tform.position.y-MousePoint.points[i].tform.position.y)<2){
-                        float dist = Vector3.Distance(m.body.tform.position, MousePoint.points[i].tform.position);
-                        if(dist < mindist){
-                            best = i;
-                            mindist = dist;
-                        }
-                    }
-                }
-                return best > -1 ? MousePoint.points[best] : Mice.CreateAdhocBedPoint(m.index, MiceZone.zone.GetWanderPoint());
-            }
-            return Mice.CreateAdhocBedPoint(m.index, MiceZone.zone.GetWanderPoint());
+            _adhoc=true;
         }
     }
     class AppSocial : Appetite {
@@ -817,6 +794,7 @@ public class Mice : MonoBehaviour {
         _hiAppetite = hiAppetitepct*max;
         _priority = priority;
         _max = max;
+        _adhoc=false;
     }
     public override MousePoint GetNearestMousePoint(Mouse m, MSTIMULUS localGoal)
     {
@@ -850,6 +828,7 @@ public class Mice : MonoBehaviour {
             _hiAppetite = hiAppetitepct*max;
             _priority = priority;
             _max = max;
+            _adhoc=false;
         }
     }
     class AppBathroom : Appetite {
@@ -860,6 +839,7 @@ public class Mice : MonoBehaviour {
             _hiAppetite = hiAppetitepct*max;
             _priority = priority;
             _max = max;
+            _adhoc=true;
         }
         public override MousePoint GetNearestMousePoint(Mouse m, MSTIMULUS localGoal)
         {
@@ -889,6 +869,7 @@ public class Mice : MonoBehaviour {
             _hiAppetite = hiAppetitepct*max;
             _priority = priority;
             _max = max;
+            _adhoc=false;
         }
     }
     class AppCall : Appetite {
@@ -899,6 +880,7 @@ public class Mice : MonoBehaviour {
             _hiAppetite = hiAppetitepct*max;
             _priority = priority;
             _max = max;
+            _adhoc=false;
         }
         public override MousePoint GetNearestMousePoint(Mouse m, MSTIMULUS localGoal)
         {
